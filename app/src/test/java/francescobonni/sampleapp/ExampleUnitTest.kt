@@ -1,4 +1,4 @@
-package francescobonni.simplebubbleview
+package francescobonni.sampleapp
 
 import org.junit.Test
 
