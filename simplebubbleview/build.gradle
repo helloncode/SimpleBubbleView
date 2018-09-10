@@ -33,6 +33,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
     implementation 'com.android.support:cardview-v7:28.0.0-rc02'
+    implementation 'com.android.support:transition:28.0.0-rc02'
     implementation "org.jetbrains.anko:anko:0.10.5"
     implementation "org.jetbrains.anko:anko-constraint-layout:0.10.5"
     implementation 'org.jetbrains.anko:anko-cardview-v7:0.10.5'

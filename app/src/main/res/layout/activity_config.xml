@@ -7,7 +7,4 @@
     android:id="@+id/root"
     tools:context="francescobonni.sampleapp.ConfigActivity">
 
-    <francescobonni.simplebubbleview.BubbleView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 </android.support.constraint.ConstraintLayout>
