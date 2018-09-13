@@ -41,6 +41,7 @@ class BubbleView : ConstraintLayout {
     private val springSystem = SpringSystem.create()
     private lateinit var bubbleXSpring: Spring
     private lateinit var bubbleYSpring: Spring
+    private lateinit var cancelSpring: Spring
     private var attachedToRootView = false
     private var showCancelLayoutEffect: YoYo.YoYoString? = null
     private var hideCancelLayoutEffect: YoYo.YoYoString? = null
@@ -71,6 +72,8 @@ class BubbleView : ConstraintLayout {
         gestureDetector = GestureDetector(context, SingleTapConfirm())
         bubbleXSpring = springSystem.createSpring().setSpringConfig(SpringConfig(120.toDouble(), 12.toDouble()))
         bubbleYSpring = springSystem.createSpring().setSpringConfig(SpringConfig(120.toDouble(), 12.toDouble()))
+        cancelSpring = springSystem.createSpring().setSpringConfig(SpringConfig(75.toDouble(), 8.toDouble()))
+        cancelSpring.currentValue = 1.0
         bubble.setOnTouchListener(draggableListener)
         val lt = LayoutTransition()
         lt.disableTransitionType(LayoutTransition.DISAPPEARING)
@@ -147,6 +150,7 @@ class BubbleView : ConstraintLayout {
         super.onAttachedToWindow()
         bubbleXSpring.addListener(MoveSpringListener())
         bubbleYSpring.addListener(MoveSpringListener())
+        cancelSpring.addListener(CancelSpringListener())
 
         val boolean = Random().nextInt(1) == 1
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -168,6 +172,7 @@ class BubbleView : ConstraintLayout {
         super.onDetachedFromWindow()
         bubbleXSpring.removeListener(MoveSpringListener())
         bubbleYSpring.removeListener(MoveSpringListener())
+        cancelSpring.removeListener(CancelSpringListener())
     }
 
     private object Ids {
@@ -321,7 +326,13 @@ class BubbleView : ConstraintLayout {
         val differenceX = abs(finalXBubble - cancel.x)
         val differenceY = abs(finalYBubble - cancel.y)
         if(differenceX + differenceY < dip(72)) {
-            springBubble(cancel.x.toDouble(), cancel.y.toDouble())
+            val widthDifference = bubble.width - cancel.width
+            val heightDifference = bubble.height - cancel.height
+            cancelSpring.endValue = 1.5
+            springBubble(cancel.x.toDouble() - (widthDifference/2), cancel.y.toDouble() - (heightDifference/2))
+
+        } else {
+            cancelSpring.endValue = 1.0
         }
     }
 
@@ -377,6 +388,13 @@ class BubbleView : ConstraintLayout {
         override fun onSpringUpdate(spring: Spring?) {
             bubble.x = bubbleXSpring.currentValue.toFloat()
             bubble.y = bubbleYSpring.currentValue.toFloat()
+        }
+    }
+
+    private inner class CancelSpringListener : SimpleSpringListener() {
+        override fun onSpringUpdate(spring: Spring?) {
+            cancel.scaleX = cancelSpring.currentValue.toFloat()
+            cancel.scaleY = cancelSpring.currentValue.toFloat()
         }
     }
 }
