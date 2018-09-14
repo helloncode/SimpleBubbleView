@@ -25,6 +25,7 @@ import kotlin.math.abs
 import android.view.WindowManager
 import android.graphics.Color
 import android.graphics.Point
+import android.util.Log
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 
@@ -42,9 +43,9 @@ class BubbleView : ConstraintLayout {
     private lateinit var bubbleXSpring: Spring
     private lateinit var bubbleYSpring: Spring
     private lateinit var cancelSpring: Spring
+    private lateinit var cancelLayoutSpring: Spring
+    private lateinit var cardSpring: Spring
     private var attachedToRootView = false
-    private var showCancelLayoutEffect: YoYo.YoYoString? = null
-    private var hideCancelLayoutEffect: YoYo.YoYoString? = null
     private var showCardViewLayoutEffect: YoYo.YoYoString? = null
     private var hideCardViewLayoutEffect: YoYo.YoYoString? = null
 
@@ -73,6 +74,9 @@ class BubbleView : ConstraintLayout {
         bubbleXSpring = springSystem.createSpring().setSpringConfig(SpringConfig(120.toDouble(), 12.toDouble()))
         bubbleYSpring = springSystem.createSpring().setSpringConfig(SpringConfig(120.toDouble(), 12.toDouble()))
         cancelSpring = springSystem.createSpring().setSpringConfig(SpringConfig(75.toDouble(), 8.toDouble()))
+        cancelLayoutSpring = springSystem.createSpring().setSpringConfig(SpringConfig(60.toDouble(), 15.toDouble()))
+        cardSpring = springSystem.createSpring().setSpringConfig(SpringConfig(120.toDouble(), 16.toDouble()))
+        cancelLayoutSpring.setEndValue(0.0).setAtRest()
         cancelSpring.currentValue = 1.0
         bubble.setOnTouchListener(draggableListener)
         val lt = LayoutTransition()
@@ -88,7 +92,7 @@ class BubbleView : ConstraintLayout {
                 imageView {
                     id = Ids.background
                     imageResource = R.drawable.gradient_bubble
-                    alpha = 0f
+                    scaleY = 0f
                 }.lparams(width = dip(0), height = dip(0)) {
                     bottomToBottom = ConstraintSet.PARENT_ID
                     endToEnd = ConstraintSet.PARENT_ID
@@ -106,8 +110,8 @@ class BubbleView : ConstraintLayout {
                 imageView {
                     id = Ids.cancel
                     imageResource = R.drawable.icon_bubble
-                    alpha = 0f
                     scaleType = ImageView.ScaleType.CENTER_CROP
+                    scaleY = 0f
                 }.lparams(width = dip(64), height = dip(64)) {
                     topToTop = Ids.background
                     endToEnd = Ids.background
@@ -118,7 +122,7 @@ class BubbleView : ConstraintLayout {
 
                 cardView {
                     id = Ids.cardview
-                    alpha = 0f
+                    scaleY = 0f
                     backgroundColor = Color.GRAY
                 }.lparams(width = matchConstraint, height = wrapContent) {
                     topToTop = ConstraintSet.PARENT_ID
@@ -133,15 +137,15 @@ class BubbleView : ConstraintLayout {
 
                 imageView {
                     id = Ids.arrow
-                    visibility = View.GONE
+                    scaleY = 0f
                     imageResource = R.drawable.triangle_drawable
                 }.lparams(width = dip(36), height = dip(36)) {
-                    topToTop = ConstraintSet.PARENT_ID
+                    topToTop = Ids.cardview
                     endToEnd = ConstraintSet.PARENT_ID
                     if(!attachedToRootView) {
-                        setMargins(0, dip(45), dip(22), 0)
+                        setMargins(0, 0, dip(22), 0)
                     } else {
-                        setMargins(0, dip(75), dip(22), 0)
+                        setMargins(0, 0, dip(22), 0)
                     }
                 }
             }
@@ -151,6 +155,8 @@ class BubbleView : ConstraintLayout {
         bubbleXSpring.addListener(MoveSpringListener())
         bubbleYSpring.addListener(MoveSpringListener())
         cancelSpring.addListener(CancelSpringListener())
+        cancelLayoutSpring.addListener(CancelLayoutSpringListener())
+        cardSpring.addListener(CardSpringListener())
 
         val boolean = Random().nextInt(1) == 1
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -173,6 +179,8 @@ class BubbleView : ConstraintLayout {
         bubbleXSpring.removeListener(MoveSpringListener())
         bubbleYSpring.removeListener(MoveSpringListener())
         cancelSpring.removeListener(CancelSpringListener())
+        cancelLayoutSpring.removeListener(CancelLayoutSpringListener())
+        cardSpring.removeListener(CardSpringListener())
     }
 
     private object Ids {
@@ -203,7 +211,7 @@ class BubbleView : ConstraintLayout {
                 } else {
                     stickBubbleToWall()
                 }
-                hideCancelLayout(true)
+                hideCancelLayout()
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -214,7 +222,7 @@ class BubbleView : ConstraintLayout {
                 if(finalYBubble > this.height/2) {
                     showCancelLayout()
                 } else {
-                    hideCancelLayout(false)
+                    hideCancelLayout()
                 }
                 magnetToCancel(finalXBubble, finalYBubble)
             }
@@ -225,7 +233,7 @@ class BubbleView : ConstraintLayout {
 
     private fun bubbleClicked() : Boolean {
         if(cancel.alpha == 1f) {
-            hideCancelLayout(false)
+            hideCancelLayout()
         }
         if(!attachedToRootView) {
             springBubble(((this.width - bubble.width) - dip(16)).toDouble(), dip(16).toDouble())
@@ -237,36 +245,13 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun showCancelLayout() {
-        if(bubble.y <= this.height/2) return
-        if(showCancelLayoutEffect != null) return
-        showCancelLayoutEffect = YoYo.with(Techniques.FadeInUp)
-                .duration(300)
-                .onEnd {
-                    hideCancelLayoutEffect = null
-                }
-                .interpolate(FastOutLinearInInterpolator())
-                .playOn(cancel)
-        YoYo.with(Techniques.FadeInUp)
-                .duration(300)
-                .interpolate(FastOutLinearInInterpolator())
-                .playOn(background)
-
+        if(cancelLayoutSpring.currentValue == 1.0) return
+        cancelLayoutSpring.endValue = 1.0
     }
 
-    private fun hideCancelLayout(force: Boolean) {
-        if(cancel.alpha == 0f) return
-        if(!force && hideCancelLayoutEffect != null) return
-        hideCancelLayoutEffect = YoYo.with(Techniques.FadeOutDown)
-                .duration(300)
-                .interpolate(FastOutLinearInInterpolator())
-                .onEnd {
-                    showCancelLayoutEffect = null
-                }
-                .playOn(cancel)
-        YoYo.with(Techniques.FadeOutDown)
-                .duration(300)
-                .interpolate(FastOutLinearInInterpolator())
-                .playOn(background)
+    private fun hideCancelLayout() {
+        if(cancelLayoutSpring.currentValue == 0.0) return
+        cancelLayoutSpring.endValue = 0.0
     }
 
     private fun springBubble(x: Double, y: Double) {
@@ -275,7 +260,7 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun toogleCardView() {
-        if(showCardViewLayoutEffect == null) {
+        if(cardSpring.endValue == 0.toDouble()) {
             showCardView()
         } else {
             hideCardView()
@@ -283,26 +268,11 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun showCardView() {
-        if(showCardViewLayoutEffect != null) return
-        android.os.Handler()
-        showCardViewLayoutEffect = YoYo.with(Techniques.FadeIn)
-                .duration(500)
-                .onEnd {
-                    hideCardViewLayoutEffect = null
-                }
-                .interpolate(FastOutLinearInInterpolator())
-                .playOn(cardView)
+        cardSpring.endValue = 1.toDouble()
     }
 
     private fun hideCardView() {
-        if(hideCardViewLayoutEffect != null) return
-        hideCardViewLayoutEffect = YoYo.with(Techniques.FadeOut)
-                .duration(500)
-                .onEnd {
-                    showCardViewLayoutEffect = null
-                }
-                .interpolate(FastOutLinearInInterpolator())
-                .playOn(cardView)
+        cardSpring.endValue = 0.toDouble()
     }
 
     private fun isBubbleOnCancel() : Boolean {
@@ -395,6 +365,24 @@ class BubbleView : ConstraintLayout {
         override fun onSpringUpdate(spring: Spring?) {
             cancel.scaleX = cancelSpring.currentValue.toFloat()
             cancel.scaleY = cancelSpring.currentValue.toFloat()
+        }
+    }
+
+    private inner class CancelLayoutSpringListener : SimpleSpringListener() {
+        override fun onSpringUpdate(spring: Spring?) {
+            cancel.scaleY = cancelLayoutSpring.currentValue.toFloat()
+            cancel.translationY = (-1000 * (cancelLayoutSpring.currentValue.toFloat() - 1))
+            background.scaleY = cancelLayoutSpring.currentValue.toFloat()
+            background.translationY = (-1000 * (cancelLayoutSpring.currentValue.toFloat() - 1))
+        }
+    }
+
+    private inner class CardSpringListener : SimpleSpringListener() {
+        override fun onSpringUpdate(spring: Spring?) {
+            cardView.scaleY = cardSpring.currentValue.toFloat()
+            cardView.scaleX = cardSpring.currentValue.toFloat()
+            cardView.alpha = cardSpring.currentValue.toFloat()
+            //cardView.translationY = ((-(cardView.height.toFloat()/2)) * (1 - cardSpring.currentValue.toFloat()))
         }
     }
 }
