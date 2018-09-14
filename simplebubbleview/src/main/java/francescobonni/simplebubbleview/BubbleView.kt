@@ -25,6 +25,7 @@ import kotlin.math.abs
 import android.view.WindowManager
 import android.graphics.Color
 import android.graphics.Point
+import android.os.Handler
 import android.util.Log
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
@@ -92,7 +93,7 @@ class BubbleView : ConstraintLayout {
                 imageView {
                     id = Ids.background
                     imageResource = R.drawable.gradient_bubble
-                    scaleY = 0f
+                    imageAlpha = 0
                 }.lparams(width = dip(0), height = dip(0)) {
                     bottomToBottom = ConstraintSet.PARENT_ID
                     endToEnd = ConstraintSet.PARENT_ID
@@ -111,6 +112,7 @@ class BubbleView : ConstraintLayout {
                     id = Ids.cancel
                     imageResource = R.drawable.icon_bubble
                     scaleType = ImageView.ScaleType.CENTER_CROP
+                    imageAlpha = 0
                     scaleY = 0f
                 }.lparams(width = dip(64), height = dip(64)) {
                     topToTop = Ids.background
@@ -300,7 +302,6 @@ class BubbleView : ConstraintLayout {
             val heightDifference = bubble.height - cancel.height
             cancelSpring.endValue = 1.5
             springBubble(cancel.x.toDouble() - (widthDifference/2), cancel.y.toDouble() - (heightDifference/2))
-
         } else {
             cancelSpring.endValue = 1.0
         }
@@ -372,8 +373,8 @@ class BubbleView : ConstraintLayout {
         override fun onSpringUpdate(spring: Spring?) {
             cancel.scaleY = cancelLayoutSpring.currentValue.toFloat()
             cancel.translationY = (-1000 * (cancelLayoutSpring.currentValue.toFloat() - 1))
-            background.scaleY = cancelLayoutSpring.currentValue.toFloat()
-            background.translationY = (-1000 * (cancelLayoutSpring.currentValue.toFloat() - 1))
+            cancel.imageAlpha = (255 * cancelLayoutSpring.currentValue.toFloat()).toInt()
+            background.imageAlpha = (255 * cancelLayoutSpring.currentValue.toFloat()).toInt()
         }
     }
 
@@ -382,7 +383,6 @@ class BubbleView : ConstraintLayout {
             cardView.scaleY = cardSpring.currentValue.toFloat()
             cardView.scaleX = cardSpring.currentValue.toFloat()
             cardView.alpha = cardSpring.currentValue.toFloat()
-            //cardView.translationY = ((-(cardView.height.toFloat()/2)) * (1 - cardSpring.currentValue.toFloat()))
         }
     }
 }
