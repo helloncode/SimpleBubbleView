@@ -1,7 +1,7 @@
 # SimpleBubbleView
 Floating Bubble View for Android app, without OverlayPermissions.
 
-#License
+# License
 Copyright 2018 Bonnì Francesco
 
    Licensed under the Apache License, Version 2.0 (the "License");
