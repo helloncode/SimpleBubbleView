@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
-import android.support.v4.view.animation.FastOutLinearInInterpolator
 import android.util.AttributeSet
 import android.support.v7.widget.CardView
 import android.view.*
@@ -25,10 +24,6 @@ import kotlin.math.abs
 import android.view.WindowManager
 import android.graphics.Color
 import android.graphics.Point
-import android.os.Handler
-import android.util.Log
-import com.daimajia.androidanimations.library.Techniques
-import com.daimajia.androidanimations.library.YoYo
 
 
 class BubbleView : ConstraintLayout {
@@ -47,8 +42,6 @@ class BubbleView : ConstraintLayout {
     private lateinit var cancelLayoutSpring: Spring
     private lateinit var cardSpring: Spring
     private var attachedToRootView = false
-    private var showCardViewLayoutEffect: YoYo.YoYoString? = null
-    private var hideCardViewLayoutEffect: YoYo.YoYoString? = null
 
     private var dX: Float = 0.toFloat()
     private var dY:Float = 0.toFloat()
@@ -278,9 +271,9 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun isBubbleOnCancel() : Boolean {
-        val differenceX = abs(bubble.x - cancel.x)
-        val differenceY = abs(bubble.y - cancel.y)
-        return differenceX + differenceY < dip(16)
+        val isOnCancelX = bubble.x >= cancel.x && bubble.x < cancel.x + cancel.width
+        val isOnCancelY = bubble.y >= cancel.y && bubble.y < cancel.y + cancel.height
+        return isOnCancelX && isOnCancelY
     }
 
     private fun hideBubble() {
