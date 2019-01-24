@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="540:225"
+        android:alpha="0"
+        android:src="@drawable/gradient_bubble"
+        tools:alpha="1"
+        />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="18dp"
+        android:alpha="0"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="320:508"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/arrow" />
+
+    <ImageView
+        android:id="@+id/bubble"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/bubble_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_arrow_drop_up_black_24dp"
+        android:tint="@android:color/darker_gray"
+        android:scaleType="centerCrop"
+        android:alpha="0"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@+id/bubble"
+        app:layout_constraintStart_toStartOf="@+id/bubble"
+        app:layout_constraintTop_toBottomOf="@+id/bubble"
+        />
+
+    <ImageView
+        android:id="@+id/cancel"
+        android:layout_width="64dp"
+        android:layout_height="64dp" 
+        android:src="@drawable/cancel_icon_bubble"
+        app:layout_constraintTop_toTopOf="@+id/background"
+        app:layout_constraintBottom_toBottomOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintEnd_toEndOf="@+id/background"
+        app:layout_constraintVertical_bias="0.40"
+        android:scaleY="0"
+        android:alpha="0"
+        tools:alpha="1"
+        tools:scaleY="1"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

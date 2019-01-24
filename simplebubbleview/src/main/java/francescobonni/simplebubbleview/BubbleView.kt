@@ -4,10 +4,9 @@ import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
-import android.support.v7.widget.CardView
+import androidx.cardview.widget.CardView
 import android.view.*
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -15,15 +14,14 @@ import com.facebook.rebound.SimpleSpringListener
 import com.facebook.rebound.Spring
 import com.facebook.rebound.SpringConfig
 import com.facebook.rebound.SpringSystem
-import org.jetbrains.anko.*
-import org.jetbrains.anko.cardview.v7.cardView
-import org.jetbrains.anko.constraint.layout.constraintLayout
-import org.jetbrains.anko.constraint.layout.matchConstraint
 import java.util.*
 import kotlin.math.abs
 import android.view.WindowManager
-import android.graphics.Color
 import android.graphics.Point
+import org.jetbrains.anko.dip
+import androidx.constraintlayout.widget.ConstraintSet
+
+
 
 
 class BubbleView : ConstraintLayout {
@@ -58,12 +56,13 @@ class BubbleView : ConstraintLayout {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun init() {
-        bubble().layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
-        background = find(Ids.background)
-        bubble = find(Ids.bubble)
-        cancel = find(Ids.cancel)
-        cardView = find(Ids.cardview)
-        arrow = find(Ids.arrow)
+        layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        LayoutInflater.from(context).inflate(R.layout.bubble_layout, this, true)
+        background = findViewById(R.id.background)
+        bubble = findViewById(R.id.bubble)
+        cancel = findViewById(R.id.cancel)
+        cardView = findViewById(R.id.cardView)
+        arrow = findViewById(R.id.arrow)
         gestureDetector = GestureDetector(context, SingleTapConfirm())
         bubbleXSpring = springSystem.createSpring().setSpringConfig(SpringConfig(120.toDouble(), 12.toDouble()))
         bubbleYSpring = springSystem.createSpring().setSpringConfig(SpringConfig(120.toDouble(), 12.toDouble()))
@@ -77,73 +76,6 @@ class BubbleView : ConstraintLayout {
         lt.disableTransitionType(LayoutTransition.DISAPPEARING)
         this.layoutTransition = lt
     }
-
-    private fun ViewManager.bubble() =
-            constraintLayout {
-                isClickable = false
-                isFocusable = false
-
-                imageView {
-                    id = Ids.background
-                    imageResource = R.drawable.gradient_bubble
-                    imageAlpha = 0
-                }.lparams(width = dip(0), height = dip(0)) {
-                    bottomToBottom = ConstraintSet.PARENT_ID
-                    endToEnd = ConstraintSet.PARENT_ID
-                    startToStart = ConstraintSet.PARENT_ID
-                    dimensionRatio = "540:225"
-                }
-
-                imageView {
-                    id = Ids.bubble
-                    imageResource = R.drawable.bubble_background
-                    x = dip(16).toFloat()
-                    y = dip(16).toFloat()
-                }.lparams(width = dip(48), height = dip(48))
-
-                imageView {
-                    id = Ids.cancel
-                    imageResource = R.drawable.icon_bubble
-                    scaleType = ImageView.ScaleType.CENTER_CROP
-                    imageAlpha = 0
-                    scaleY = 0f
-                }.lparams(width = dip(64), height = dip(64)) {
-                    topToTop = Ids.background
-                    endToEnd = Ids.background
-                    startToStart = Ids.background
-                    bottomToBottom = Ids.background
-                    verticalBias = 0.40f
-                }
-
-                cardView {
-                    id = Ids.cardview
-                    scaleY = 0f
-                    backgroundColor = Color.GRAY
-                }.lparams(width = matchConstraint, height = wrapContent) {
-                    topToTop = ConstraintSet.PARENT_ID
-                    startToStart = ConstraintSet.PARENT_ID
-                    endToEnd = ConstraintSet.PARENT_ID
-                    if(!attachedToRootView) {
-                        setMargins(0, dip(80), 0, 0)
-                    } else {
-                        setMargins(0, dip(110), 0, 0)
-                    }
-                }
-
-                imageView {
-                    id = Ids.arrow
-                    scaleY = 0f
-                    imageResource = R.drawable.triangle_drawable
-                }.lparams(width = dip(36), height = dip(36)) {
-                    topToTop = Ids.cardview
-                    endToEnd = ConstraintSet.PARENT_ID
-                    if(!attachedToRootView) {
-                        setMargins(0, 0, dip(22), 0)
-                    } else {
-                        setMargins(0, 0, dip(22), 0)
-                    }
-                }
-            }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -160,12 +92,7 @@ class BubbleView : ConstraintLayout {
         display.getSize(size)
         val width = size.x
         val height = size.y
-        springBubble(
-                if(boolean)
-                    dip(16).toDouble()
-                else
-                    ((width.toDouble() - bubble.width) - dip(64)),
-                Random().nextInt(height/2).toDouble() + dip(16).toDouble())
+        springBubble(dip(64).toDouble(),dip(56).toDouble())
     }
 
 
@@ -176,14 +103,6 @@ class BubbleView : ConstraintLayout {
         cancelSpring.removeListener(CancelSpringListener())
         cancelLayoutSpring.removeListener(CancelLayoutSpringListener())
         cardSpring.removeListener(CardSpringListener())
-    }
-
-    private object Ids {
-        val background = View.generateViewId()
-        val bubble = View.generateViewId()
-        val cancel = View.generateViewId()
-        val cardview = View.generateViewId()
-        val arrow = View.generateViewId()
     }
 
     private var draggableListener = View.OnTouchListener { view, motionEvent ->
@@ -231,9 +150,9 @@ class BubbleView : ConstraintLayout {
             hideCancelLayout()
         }
         if(!attachedToRootView) {
-            springBubble(((this.width - bubble.width) - dip(16)).toDouble(), dip(16).toDouble())
+            springBubble(((this.width - bubble.width) - dip(16)).toDouble(), dip(64).toDouble())
         } else {
-            springBubble(((this.width - bubble.width) - dip(16)).toDouble(), dip(46).toDouble())
+            springBubble(((this.width - bubble.width) - dip(16)).toDouble(), dip(64).toDouble())
         }
         toogleCardView()
         return true
@@ -331,7 +250,7 @@ class BubbleView : ConstraintLayout {
     }
 
     fun setLayoutPopup(layoutId: Int) : BubbleView {
-        return setLayoutPopup(context.layoutInflater.inflate(layoutId, cardView, false))
+        return setLayoutPopup(View.inflate(context, layoutId, null))
     }
 
     fun setLayoutPopup(layoutView: View) : BubbleView {
@@ -341,8 +260,6 @@ class BubbleView : ConstraintLayout {
     }
 
     private inner class SingleTapConfirm : GestureDetector.SimpleOnGestureListener() {
-
-
         override fun onSingleTapUp(event: MotionEvent): Boolean {
             return true
         }
