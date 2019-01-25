@@ -16,23 +16,23 @@ import org.jetbrains.anko.dip
 import kotlin.math.abs
 import kotlin.random.Random
 
-
+internal const val STIFNESS_BUBBLE_ANIMATION = 150f
 class BubbleView : ConstraintLayout {
 
-    private lateinit var gestureDetector: GestureDetector
+    private var gestureDetector: GestureDetector = GestureDetector(context, SingleTapConfirm())
     private var showPopup : Boolean = false
     private var dX: Float = 0.toFloat()
     private var dY: Float = 0.toFloat()
     private val xAnimForce = SpringForce().apply {
         dampingRatio =  SpringForce.DAMPING_RATIO_LOW_BOUNCY
-        stiffness = 150f
+        stiffness = SpringForce.STIFFNESS_HIGH
     }
     private val yAnimForce = SpringForce().apply {
         dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-        stiffness = 150f
+        stiffness = STIFNESS_BUBBLE_ANIMATION
     }
     private val alphaAnimForce = SpringForce().apply {
-        dampingRatio = 0.45f
+        dampingRatio = 1f
         stiffness = 40f
     }
 
@@ -49,9 +49,8 @@ class BubbleView : ConstraintLayout {
     private lateinit var yAnimBubble: SpringAnimation
     private lateinit var alphaAnimBubbleCard: SpringAnimation
     private lateinit var slideYAnimBubbleCard: SpringAnimation
-    private lateinit var alphaAnimCancel: SpringAnimation
+    private var alphaAnimCancel: SpringAnimation
     var click = false
-    var cancelView = false
 
     private var draggableListener = View.OnTouchListener { view, motionEvent ->
         if(showPopup) {
@@ -95,9 +94,13 @@ class BubbleView : ConstraintLayout {
         return@OnTouchListener true
     }
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?) : super(context) {
+    }
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+    }
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    }
+
 
     init {
         layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -120,7 +123,7 @@ class BubbleView : ConstraintLayout {
             yAnimBubble = SpringAnimation(bubble, DynamicAnimation.Y).apply {
                 spring = yAnimForce
             }
-            yAnimBubble.addUpdateListener { animation, value, velocity ->
+            yAnimBubble.addUpdateListener { _, value, _ ->
                 Log.e("value", value.toString())
                 if(click && value <= dip(90).toFloat()) {
                     toogleCardView()
@@ -208,7 +211,7 @@ class BubbleView : ConstraintLayout {
             yAnimBubble.animateToFinalPosition(cancel.y - (heightDifference/2))
             xAnimBubble.animateToFinalPosition(cancel.x - (widthDifference/2))
         } else {
-            //cancelSpring.endValue = 1.0
+            /* cancelSpring.endValue = 1.0 */
         }
     }
 

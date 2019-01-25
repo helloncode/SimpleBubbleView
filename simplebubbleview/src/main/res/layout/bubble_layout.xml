@@ -72,7 +72,7 @@
         app:layout_constraintStart_toStartOf="@+id/background"
         app:layout_constraintEnd_toEndOf="@+id/background"
         app:layout_constraintVertical_bias="0.40"
-        android:alpha="0"
+        android:alpha="500"
         tools:alpha="1"
 
         />
