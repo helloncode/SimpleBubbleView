@@ -17,7 +17,7 @@ class ConfigActivity : AppCompatActivity() {
         bubbleView.setLayoutPopup(R.layout.popup_bubble_layout)
         val vg = window.decorView.rootView as ViewGroup
         Handler().postDelayed({
-            root.addView(bubbleView)
+            vg.addView(bubbleView)
         }, 3000)
 
         button.setOnClickListener {

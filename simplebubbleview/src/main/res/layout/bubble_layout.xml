@@ -25,13 +25,16 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="18dp"
+        android:layout_marginBottom="48dp"
         android:alpha="0"
+        app:cardBackgroundColor="@android:color/darker_gray"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="320:508"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/arrow" />
+        app:layout_constraintTop_toTopOf="@+id/arrow"
+        tools:alpha="1"
+        />
 
     <ImageView
         android:id="@+id/bubble"
@@ -69,10 +72,9 @@
         app:layout_constraintStart_toStartOf="@+id/background"
         app:layout_constraintEnd_toEndOf="@+id/background"
         app:layout_constraintVertical_bias="0.40"
-        android:scaleY="0"
         android:alpha="0"
         tools:alpha="1"
-        tools:scaleY="1"
+
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
