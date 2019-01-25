@@ -2,6 +2,7 @@ package francescobonni.sampleapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.ViewGroup
 import android.widget.Toast
 import francescobonni.simplebubbleview.BubbleView
@@ -15,7 +16,10 @@ class ConfigActivity : AppCompatActivity() {
         val bubbleView = BubbleView(this)
         bubbleView.setLayoutPopup(R.layout.popup_bubble_layout)
         val vg = window.decorView.rootView as ViewGroup
-        vg.addView(bubbleView)
+        Handler().postDelayed({
+            root.addView(bubbleView)
+        }, 3000)
+
         button.setOnClickListener {
             Toast.makeText(it.context,"Click", Toast.LENGTH_LONG).show()
         }
