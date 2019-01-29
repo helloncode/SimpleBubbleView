@@ -7,7 +7,7 @@
     android:id="@+id/root"
     tools:context="francescobonni.sampleapp.ConfigActivity">
 
-    <francescobonni.simplebubbleview.BubbleView
+    <!--<francescobonni.simplebubbleview.BubbleView
         android:id="@+id/bubbleview"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -17,5 +17,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:card_layout="@layout/popup_bubble_layout"
         app:bubble_bouncy="no_bouncy"
-        />
+        />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
