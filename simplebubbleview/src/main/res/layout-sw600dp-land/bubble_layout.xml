@@ -21,57 +21,56 @@
         android:id="@+id/cancel_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintHeight_max="150dp"
         android:alpha="0"
         android:src="@drawable/gradient_bubble"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="540:225"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:alpha="1" />
 
-
     <ImageView
         android:id="@+id/bubble"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="35dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/bubble_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintBottom_toTopOf="@+id/cardLayout"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:alpha="0"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bubble"
         tools:alpha="1">
 
         <ImageView
             android:id="@+id/arrow"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="58dp"
+            android:layout_height="10dp"
             android:layout_marginEnd="16dp"
+            android:paddingStart="24dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="24dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_arrow_drop_up_black_24dp"
+            android:src="@drawable/arrow_bubble"
             android:tint="@android:color/darker_gray"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="18:9"
+            app:layout_constraintEnd_toEndOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.cardview.widget.CardView
+        <FrameLayout
             android:id="@+id/cardView"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginBottom="48dp"
-            app:cardBackgroundColor="@android:color/darker_gray"
-            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

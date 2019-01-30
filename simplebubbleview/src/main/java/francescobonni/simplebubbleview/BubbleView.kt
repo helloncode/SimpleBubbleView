@@ -96,7 +96,7 @@ class BubbleView : ConstraintLayout {
     }
 
     private val bubbleXOnClick by lazy {
-        width.minus(bubble.width).minus(dip(16)).toFloat()
+        cardLayout.x.plus(cardLayout.width.minus(bubble.width).minus(dip(16)))
     }
     private val bubbleYOnClick by lazy {
         val value = if (attachedToRoot) {

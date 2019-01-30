@@ -41,8 +41,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:alpha="0"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -62,14 +62,13 @@
             android:src="@drawable/arrow_bubble"
             android:tint="@android:color/darker_gray"
             app:layout_constraintDimensionRatio="18:9"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:id="@+id/cardView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constrainedWidth="true"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
