@@ -1,1 +1,2 @@
-<manifest package="francescobonni.simplebubbleview" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="francescobonni.simplebubbleview" />
