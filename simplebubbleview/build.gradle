@@ -16,7 +16,7 @@ ext {
     siteUrl = 'https://github.com/francescobonni/SimpleBubbleView'
     gitUrl = 'https://github.com/francescobonni/SimpleBubbleView.git'
 
-    libraryVersion = '0.3.0'
+    libraryVersion = '0.5.0'
 
     developerId = 'francescobonni'
     developerName = 'Francesco Bonni'
