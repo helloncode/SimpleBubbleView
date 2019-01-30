@@ -10,5 +10,6 @@
         <attr name="card_animation_speed" format="float" />
         <attr name="cancel_animation_speed" format="float" />
         <attr name="magnet_to_wall" format="boolean" />
+        <attr name="show" format="boolean" />
     </declare-styleable>
 </resources>

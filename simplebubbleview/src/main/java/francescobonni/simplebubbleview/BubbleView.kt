@@ -147,6 +147,7 @@ class BubbleView : ConstraintLayout {
     private var cardstatus = VisibilityStatus.INVISIBLE
     private var cancelstatus = VisibilityStatus.INVISIBLE
     private var stickToWall = true
+    private var show = false
 
     private var dX: Float = 0.toFloat()
     private var dY: Float = 0.toFloat()
@@ -159,8 +160,10 @@ class BubbleView : ConstraintLayout {
         override fun onGlobalLayout() {
             initCancelPosition()
             shrinkCardLayoutIfNeed()
-            showBubble()
             removeOnGlobalLayoutListener()
+            if(show) {
+                showBubble()
+            }
         }
     }
 
@@ -267,6 +270,7 @@ class BubbleView : ConstraintLayout {
             cancelIconId = array.getResourceId(R.styleable.BubbleView_cancel_icon, R.drawable.cancel_icon_bubble)
             Glide.with(context).load(cancelIconId).into(cancel)
             stickToWall = array.getBoolean(R.styleable.BubbleView_cancel_icon, true)
+            show = array.getBoolean(R.styleable.BubbleView_show, false)
             if (array.hasValue(R.styleable.BubbleView_card_layout)) {
                 cardChildLayoutId = array.getResourceId(R.styleable.BubbleView_card_layout, 0)
                 cardChildLayoutId?.let {
@@ -351,6 +355,7 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun showBubble() {
+        bubble.visibility = View.VISIBLE
         loadBubble(object : RequestListener<Drawable> {
             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                 return false
@@ -438,7 +443,9 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun hideBubble() {
-        bubble.visibility = View.GONE
+        bubble.x = 0f
+        bubble.y = 0f
+        bubble.visibility = View.INVISIBLE
     }
 
     private fun stickBubbleToWall() {
@@ -532,6 +539,18 @@ class BubbleView : ConstraintLayout {
         (cardView as FrameLayout).addView(layoutView)
         shrinkCardLayoutIfNeed()
         return this
+    }
+
+    fun show() {
+        showBubble()
+    }
+
+    fun isBubbleShown() : Boolean = bubble.visibility == View.VISIBLE
+
+    fun hide() {
+        hideBubble()
+        hideCardView()
+        hideCancelLayout()
     }
 
     enum class VisibilityStatus {

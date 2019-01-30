@@ -16,7 +16,7 @@ ext {
     siteUrl = 'https://github.com/francescobonni/SimpleBubbleView'
     gitUrl = 'https://github.com/francescobonni/SimpleBubbleView.git'
 
-    libraryVersion = '0.6.0'
+    libraryVersion = '0.6.1'
 
     developerId = 'francescobonni'
     developerName = 'Francesco Bonni'
@@ -35,7 +35,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 5
-        versionName "0.6.0"
+        versionName "0.6.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
