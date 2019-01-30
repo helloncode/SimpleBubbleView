@@ -1,34 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="BubbleView">
-        <attr name="cancel_icon" format="integer"/>
-        <attr name="bubble_icon" format="integer"/>
-        <attr name="bubble_fallback_icon" format="integer"/>
-        <attr name="card_layout" format="integer"/>
-        <attr name="bubble_bouncy" format="enum">
-            <enum name="no_bouncy" value="100"/>
-            <enum name="low_bouncy" value="75"/>
-            <enum name="medium_bouncy" value="50"/>
-            <enum name="high_bouncy" value="20"/>
-        </attr>
-        <attr name="bubble_speed" format="enum">
-            <enum name="very_low" value="50"/>
-            <enum name="low" value="200"/>
-            <enum name="medium" value="1500"/>
-            <enum name="high" value="10000"/>
-        </attr>
-        <attr name="card_animation_speed" format="enum">
-            <enum name="very_low" value="50"/>
-            <enum name="low" value="200"/>
-            <enum name="medium" value="1500"/>
-            <enum name="high" value="10000"/>
-        </attr>
-        <attr name="cancel_animation_speed" format="enum">
-            <enum name="very_low" value="50"/>
-            <enum name="low" value="200"/>
-            <enum name="medium" value="1500"/>
-            <enum name="high" value="10000"/>
-        </attr>
-        <attr name="magnet_to_wall" format="boolean"/>
+        <attr name="cancel_icon" format="integer" />
+        <attr name="bubble_icon" format="integer" />
+        <attr name="bubble_fallback_icon" format="integer" />
+        <attr name="card_layout" format="integer" />
+        <attr name="bubble_bouncy" format="float" />
+        <attr name="bubble_speed" format="float" />
+        <attr name="card_animation_speed" format="float" />
+        <attr name="cancel_animation_speed" format="float" />
+        <attr name="magnet_to_wall" format="boolean" />
     </declare-styleable>
 </resources>

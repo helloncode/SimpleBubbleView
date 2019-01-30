@@ -17,8 +17,6 @@ class ConfigActivity : AppCompatActivity() {
         bubbleView.setLayoutPopup(R.layout.popup_bubble_layout)
         bubbleView.setAttachedViewRoot(true)
         val vg = window.decorView.rootView as ViewGroup
-        Handler().postDelayed({
-            vg.addView(bubbleView)
-        },3000);
+        vg.addView(bubbleView)
     }
 }

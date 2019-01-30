@@ -1,15 +1,10 @@
 package francescobonni.simplebubbleview
 
-import android.content.Context
-import android.graphics.Point
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.WindowManager
-import android.content.ContextWrapper
 import android.app.Activity
-import android.view.Display
-import android.os.Build
-import java.lang.reflect.InvocationTargetException
+import android.content.Context
+import android.content.ContextWrapper
+import android.graphics.Point
+import android.view.WindowManager
 
 
 internal object Utils {
