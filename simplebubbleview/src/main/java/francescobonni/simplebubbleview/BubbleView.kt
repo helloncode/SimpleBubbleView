@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.bubble_layout.view.*
 import org.jetbrains.anko.dip
@@ -374,8 +375,8 @@ class BubbleView : ConstraintLayout {
 
     private fun loadBubble(requestListener: RequestListener<Drawable>) {
         bubbleIconId?.let {
-            GlideApp.with(context).load(it).error(bubbleFallbackIconId
-                    ?: R.drawable.bubble_background).addListener(requestListener).into(bubble)
+            Glide.with(context).load(it).apply(RequestOptions().error(bubbleFallbackIconId
+                    ?: R.drawable.bubble_background)).addListener(requestListener).into(bubble)
         } ?: showBubbleAnimation()
     }
 
