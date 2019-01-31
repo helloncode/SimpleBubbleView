@@ -4,10 +4,15 @@
         <attr name="cancel_icon" format="integer" />
         <attr name="bubble_icon" format="integer" />
         <attr name="bubble_fallback_icon" format="integer" />
-        <attr name="card_layout" format="integer" />
+        <attr name="child_layout" format="integer" />
         <attr name="bubble_bouncy" format="float" />
         <attr name="bubble_speed" format="float" />
-        <attr name="card_animation_speed" format="float" />
+        <attr name="child_layout_animation_speed" format="float" />
+        <attr name="child_layout_anchor" format="enum">
+            <enum value="1" name="top"/>
+            <enum value="0" name="center"/>
+            <enum value="-1" name="bottom"/>
+        </attr>
         <attr name="cancel_animation_speed" format="float" />
         <attr name="magnet_to_wall" format="boolean" />
         <attr name="show" format="boolean" />

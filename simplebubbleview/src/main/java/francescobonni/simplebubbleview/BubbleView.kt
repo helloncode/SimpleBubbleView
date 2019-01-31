@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.*
-import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -27,48 +26,78 @@ import kotlin.random.Random
 internal const val STIFNESS_BUBBLE_ANIMATION = 175f
 internal const val STIFNESS_BUBBLE_ANIMATION_ON_DRAG = 12_000f
 internal const val STIFNESS_ALPHA_ANIMATION = 40f
-
 class BubbleView : ConstraintLayout {
-    private var counter = 0
-
-    private val xAnimForce = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-        stiffness = STIFNESS_BUBBLE_ANIMATION
+    private val DIP_16:Int by lazy {
+        dip(16)
+    }
+    private val xAnimForce by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+            stiffness = STIFNESS_BUBBLE_ANIMATION
+        }
     }
 
-    private val yAnimForce = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-        stiffness = STIFNESS_BUBBLE_ANIMATION
+    private val yAnimForce by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+            stiffness = STIFNESS_BUBBLE_ANIMATION
+        }
     }
 
-    private val alphaAnimForceCancelLayout = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        stiffness = SpringForce.STIFFNESS_LOW
+    private val alphaAnimForceCancelLayout by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = SpringForce.STIFFNESS_LOW
+        }
     }
 
-    private val slideYAnimForceCancel = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        stiffness = SpringForce.STIFFNESS_LOW
+    private val slideYAnimForceCancel by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = SpringForce.STIFFNESS_LOW
+        }
     }
 
-    private val zoomAnimForceCancel = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        stiffness = SpringForce.STIFFNESS_MEDIUM
+    private val zoomAnimForceCancel by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = SpringForce.STIFFNESS_MEDIUM
+        }
     }
 
-    private val backgroundWindowAnimForce = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        stiffness = SpringForce.STIFFNESS_LOW
+    private val backgroundWindowAnimForce by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = SpringForce.STIFFNESS_LOW
+        }
     }
 
-    private val alphaAnimForceCardLayout = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        stiffness = STIFNESS_ALPHA_ANIMATION
+    private val alphaAnimForceCustomLayout by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = STIFNESS_ALPHA_ANIMATION
+        }
     }
 
-    private val slideYAnimForceCardLayout = SpringForce().apply {
-        dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-        stiffness = SpringForce.STIFFNESS_LOW
+    private val slideYAnimForceCustomLayout by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = SpringForce.STIFFNESS_LOW
+        }
+    }
+
+    private val alphaAnimForceArrow by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = STIFNESS_ALPHA_ANIMATION
+        }
+    }
+
+    private val slideYAnimForceArrow by lazy {
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            stiffness = SpringForce.STIFFNESS_LOW
+        }
     }
 
     private val statusBarHeight: Int by lazy {
@@ -97,41 +126,48 @@ class BubbleView : ConstraintLayout {
     }
 
     private val bubbleXOnClick by lazy {
-        cardLayout.x.plus(cardLayout.width.minus(bubble.width).minus(dip(16)))
+        customLayout.x.plus(customLayout.width.minus(bubble.width).minus(dip(16)))
     }
+
     private val bubbleYOnClick by lazy {
-        val value = if (attachedToRoot) {
-            height.minus(cardLayout.height.plus(bubble.height).plus(navigationBarHeight)).toFloat()
-        } else {
-            height.minus(cardLayout.height.plus(bubble.height)).toFloat()
-        }
-        return@lazy if (value > statusBarHeight.toFloat()) {
-            value
+        var value = height.minus(customLayout.height.plus(bubble.height).plus(arrow.height)).toFloat()
+        if (attachedToRoot) value = value.minus(navigationBarHeight)
+        return@lazy if (value > statusBarHeight.toFloat() && customLayoutPosition != 1) {
+            when (customLayoutPosition) {
+                -1 -> value
+                else -> value/2
+            }
         } else {
             if (attachedToRoot) {
-                statusBarHeight.toFloat()
+                statusBarHeight.plus(DIP_16).toFloat()
             } else {
-                0f
+                DIP_16.toFloat()
             }
         }
     }
+
     private val minX by lazy {
-        bubble.width.plus(dip(16))
+        bubble.width.plus(DIP_16)
     }
+
     private val maxX by lazy {
-        width.minus(bubble.width).minus(dip(16))
+        width.minus(bubble.width).minus(DIP_16)
     }
+
     private val minY by lazy {
-        statusBarHeight.plus(dip(16))
+        statusBarHeight.plus(DIP_16)
     }
+
     private val maxY by lazy {
         height.minus(bubble.height).minus(dip(64)).div(2)
     }
 
     private lateinit var xAnimBubble: SpringAnimation
     private lateinit var yAnimBubble: SpringAnimation
-    private lateinit var alphaAnimBubbleCardLayout: SpringAnimation
-    private lateinit var slideYAnimBubbleCardLayout: SpringAnimation
+    private lateinit var alphaAnimBubbleCustomLayout: SpringAnimation
+    private lateinit var slideYAnimBubbleCustomLayout: SpringAnimation
+    private lateinit var alphaAnimBubbleArrow: SpringAnimation
+    private lateinit var slideYAnimBubbleArrow: SpringAnimation
     private lateinit var slideAnimCancel: SpringAnimation
     private lateinit var alphaAnimCancel: SpringAnimation
     private lateinit var alphaAnimCancelLayout: SpringAnimation
@@ -150,21 +186,25 @@ class BubbleView : ConstraintLayout {
     private var stickToWall = true
     private var show = false
 
-    private var dX: Float = 0.toFloat()
-    private var dY: Float = 0.toFloat()
-    private var savedBubbleXOnclick: Float = 0.toFloat()
-    private var savedBubbleYOnclick: Float = 0.toFloat()
-    private var cancelYPosition = 0.toFloat()
+    private var dX: Float = 0f
+    private var dY: Float = 0f
+    private var savedBubbleXOnclick: Float = 0f
+    private var savedBubbleYOnclick: Float = 0f
+    private var cancelYPosition = 0f
+    private var counterMoveCalled = 0
     private var attachedToRoot = false
+    private var arrayAttr: TypedArray? = null
+    private lateinit var customLayout: View
+    private var customLayoutPosition: Int? = 0
 
-    private val onGlobalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
-        override fun onGlobalLayout() {
-            initCancelPosition()
-            shrinkCardLayoutIfNeed()
-            removeOnGlobalLayoutListener()
-            if(show) {
-                showBubble()
-            }
+    private val onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+        initCancelPosition()
+        shrinkCardLayoutIfNeed()
+        removeOnGlobalLayoutListener()
+        customLayout.y = height.toFloat()
+        arrow.y = height.toFloat()
+        if(show) {
+            showBubble()
         }
     }
 
@@ -176,18 +216,18 @@ class BubbleView : ConstraintLayout {
                 }
 
                 MotionEvent.ACTION_UP -> {
-                    if (counter == 5) {
+                    if (counterMoveCalled == 10) {
                         xAnimBubble.spring.stiffness = STIFNESS_BUBBLE_ANIMATION
                         yAnimBubble.spring.stiffness = STIFNESS_BUBBLE_ANIMATION
                         onActionUpBubble()
                     }
-                    counter = 0
+                    counterMoveCalled = 0
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    if (counter < 5) counter++
-                    if (counter == 5) {
-                        onActionMoveBuble(motionEvent)
+                    if (counterMoveCalled < 10) counterMoveCalled++
+                    if (counterMoveCalled == 10) {
+                        onActionMoveBubble(motionEvent)
                     }
                 }
                 else -> return@OnTouchListener false
@@ -210,7 +250,7 @@ class BubbleView : ConstraintLayout {
         hideCancelLayout()
     }
 
-    private fun onActionMoveBuble(motionEvent: MotionEvent) {
+    private fun onActionMoveBubble(motionEvent: MotionEvent) {
         if (cardstatus == VisibilityStatus.VISIBLE) {
             hideCardView()
         }
@@ -218,45 +258,35 @@ class BubbleView : ConstraintLayout {
         yAnimBubble.spring.stiffness = stifnessOnDragBubbleAnimation
         val finalXBubble = (motionEvent.rawX + dX)
         val finalYBubble = (motionEvent.rawY + dY)
-        xAnimBubble.animateToFinalPosition(finalXBubble)
-        yAnimBubble.animateToFinalPosition(finalYBubble)
         if (finalYBubble > this.height / 2 && cancelstatus == VisibilityStatus.INVISIBLE) {
             showCancelLayout()
         } else if (finalYBubble < this.height / 2 && cancelstatus == VisibilityStatus.VISIBLE) {
             hideCancelLayout()
         }
-        magnetToCancel(finalXBubble, finalYBubble)
+        if(!magnetToCancel(finalXBubble, finalYBubble)) {
+            xAnimBubble.animateToFinalPosition(finalXBubble)
+            yAnimBubble.animateToFinalPosition(finalYBubble)
+        }
+
     }
 
     constructor(context: Context?) : this(context, null)
     constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         initLayout()
-        initAnimation()
-        initAttributes(context?.theme?.obtainStyledAttributes(attrs, R.styleable.BubbleView, defStyleAttr, 0))
-        bubble.setOnTouchListener(bubbleOnTouchListener)
-        viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+        arrayAttr = context?.theme?.obtainStyledAttributes(attrs, R.styleable.BubbleView, defStyleAttr, 0)
     }
 
     private fun shrinkCardLayoutIfNeed() {
-        val value = if (attachedToRoot) {
-            height.minus(cardLayout.height.plus(bubble.height).plus(navigationBarHeight)).toFloat()
-        } else {
-            height.minus(cardLayout.height.plus(bubble.height)).toFloat()
+        val params = customLayout.layoutParams
+        var value = height.minus(customLayout.height.plus(bubble.height).plus(DIP_16))
+        if(attachedToRoot) value = value.plus(navigationBarHeight)
+
+        if ((attachedToRoot && value < statusBarHeight) || value < 0) {
+            params.height = customLayout.height.minus(value.absoluteValue)
         }
-        if (attachedToRoot) {
-            if (value < statusBarHeight) {
-                val params = cardLayout.layoutParams
-                params.height = cardLayout.height.minus(value.absoluteValue).toInt()
-                cardLayout.layoutParams = params
-            }
-        } else {
-            if (value < 0) {
-                val params = cardLayout.layoutParams
-                params.height = cardLayout.height.plus(value).toInt()
-                cardLayout.layoutParams = params
-            }
-        }
+
+        customLayout.layoutParams = params
     }
 
     private fun initLayout() {
@@ -264,7 +294,24 @@ class BubbleView : ConstraintLayout {
         LayoutInflater.from(context).inflate(R.layout.bubble_layout, this, true)
     }
 
-    private fun initAttributes(arrayAttr: TypedArray?) {
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        initAttributesLayout()
+        customLayout = findViewById(cardChildLayoutId!!)
+        initAnimation()
+        initAttributesAnimation()
+        bubble.setOnTouchListener(bubbleOnTouchListener)
+        viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+    }
+
+    private fun initAnimation() {
+        initBubbleAnimation()
+        initAnimationCard()
+        initAnimationCancel()
+        initBackgroundWindowCard()
+    }
+
+    private fun initAttributesLayout() {
         arrayAttr?.let { array ->
             bubbleIconId = array.getResourceId(R.styleable.BubbleView_bubble_icon, R.drawable.bubble_background)
             bubbleFallbackIconId = array.getResourceId(R.styleable.BubbleView_bubble_fallback_icon, R.drawable.bubble_background)
@@ -272,12 +319,14 @@ class BubbleView : ConstraintLayout {
             Glide.with(context).load(cancelIconId).into(cancel)
             stickToWall = array.getBoolean(R.styleable.BubbleView_cancel_icon, true)
             show = array.getBoolean(R.styleable.BubbleView_show, false)
-            if (array.hasValue(R.styleable.BubbleView_card_layout)) {
-                cardChildLayoutId = array.getResourceId(R.styleable.BubbleView_card_layout, 0)
-                cardChildLayoutId?.let {
-                    setLayoutPopup(View.inflate(context, it, null))
-                }
+            if (array.hasValue(R.styleable.BubbleView_child_layout)) {
+                cardChildLayoutId = array.getResourceId(R.styleable.BubbleView_child_layout, 0)
             }
+        }
+    }
+
+    private fun initAttributesAnimation() {
+        arrayAttr?.let { array ->
             if (array.hasValue(R.styleable.BubbleView_bubble_bouncy)) {
                 val bouncy = array.getFloat(R.styleable.BubbleView_bubble_bouncy, 0f).div(100)
                 xAnimBubble.spring.dampingRatio = bouncy
@@ -290,17 +339,15 @@ class BubbleView : ConstraintLayout {
             if (array.hasValue(R.styleable.BubbleView_cancel_animation_speed)) {
                 slideAnimCancel.spring.stiffness = array.getFloat(R.styleable.BubbleView_cancel_animation_speed, 0f)
             }
-            if (array.hasValue(R.styleable.BubbleView_card_animation_speed)) {
-                slideYAnimBubbleCardLayout.spring.dampingRatio = array.getFloat(R.styleable.BubbleView_card_animation_speed, 0f)
+            if (array.hasValue(R.styleable.BubbleView_child_layout_animation_speed)) {
+                val speed = array.getFloat(R.styleable.BubbleView_child_layout_animation_speed, 0f)
+                slideYAnimBubbleCustomLayout.spring.stiffness = speed
+                alphaAnimBubbleCustomLayout.spring.stiffness = speed
+                slideYAnimBubbleArrow.spring.stiffness = speed
+                slideYAnimBubbleArrow.spring.stiffness = speed
             }
+            customLayoutPosition = array.getInt(R.styleable.BubbleView_child_layout_anchor, 0)
         }
-    }
-
-    private fun initAnimation() {
-        initBubbleAnimation()
-        initAnimationCard()
-        initAnimationCancel()
-        initBackgroundWindowCard()
     }
 
     private fun initBubbleAnimation() {
@@ -313,12 +360,20 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun initAnimationCard() {
-        alphaAnimBubbleCardLayout = SpringAnimation(cardLayout, DynamicAnimation.ALPHA).apply {
-            spring = alphaAnimForceCardLayout
+        alphaAnimBubbleCustomLayout = SpringAnimation(customLayout, DynamicAnimation.ALPHA).apply {
+            spring = alphaAnimForceCustomLayout
         }
 
-        slideYAnimBubbleCardLayout = SpringAnimation(cardLayout, DynamicAnimation.Y).apply {
-            spring = slideYAnimForceCardLayout
+        slideYAnimBubbleCustomLayout = SpringAnimation(customLayout, DynamicAnimation.Y).apply {
+            spring = slideYAnimForceCustomLayout
+        }
+
+        alphaAnimBubbleArrow= SpringAnimation(arrow, DynamicAnimation.ALPHA).apply {
+            spring = alphaAnimForceArrow
+        }
+
+        slideYAnimBubbleArrow = SpringAnimation(arrow, DynamicAnimation.Y).apply {
+            spring = slideYAnimForceArrow
         }
     }
 
@@ -356,7 +411,6 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun showBubble() {
-        bubble.visibility = View.VISIBLE
         loadBubble(object : RequestListener<Drawable> {
             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                 return false
@@ -381,6 +435,7 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun showBubbleAnimation() {
+        bubble.alpha = 1f
         val randPositionX = Random.nextInt(minX, maxX)
         val randPositionY = Random.nextInt(minY, maxY)
         xAnimBubble.animateToFinalPosition(randPositionX.toFloat())
@@ -409,17 +464,21 @@ class BubbleView : ConstraintLayout {
     }
 
     private fun showCardView() {
-
         cardstatus = VisibilityStatus.VISIBLE
-        alphaAnimBubbleCardLayout.animateToFinalPosition(1f)
-        slideYAnimBubbleCardLayout.animateToFinalPosition(bubbleYOnClick.plus(bubble.height))
+        arrow.x = bubbleXOnClick
+        alphaAnimBubbleCustomLayout.animateToFinalPosition(1f)
+        alphaAnimBubbleArrow.animateToFinalPosition(1f)
+        slideYAnimBubbleCustomLayout.animateToFinalPosition(bubbleYOnClick.plus(bubble.height).plus(arrow.height))
+        slideYAnimBubbleArrow.animateToFinalPosition(bubbleYOnClick.plus(bubble.height))
         alphaAnimWindowBackground.animateToFinalPosition(1f)
     }
 
     private fun hideCardView() {
         cardstatus = VisibilityStatus.INVISIBLE
-        alphaAnimBubbleCardLayout.animateToFinalPosition(0f)
-        slideYAnimBubbleCardLayout.animateToFinalPosition(height.toFloat())
+        alphaAnimBubbleCustomLayout.animateToFinalPosition(0f)
+        alphaAnimBubbleArrow.animateToFinalPosition(0f)
+        slideYAnimBubbleCustomLayout.animateToFinalPosition(height.toFloat())
+        slideYAnimBubbleArrow.animateToFinalPosition(height.toFloat())
         alphaAnimWindowBackground.animateToFinalPosition(0f)
     }
 
@@ -451,27 +510,30 @@ class BubbleView : ConstraintLayout {
 
     private fun stickBubbleToWall() {
         val middle = this.width / 2
-        val nearestXWall = (if (bubble.x >= middle) (this.width - bubble.width) - dip(16) else dip(16)).toFloat()
+        val nearestXWall = (if (bubble.x >= middle) (this.width - bubble.width) - DIP_16 else DIP_16).toFloat()
         xAnimBubble.animateToFinalPosition(nearestXWall)
         yAnimBubble.animateToFinalPosition(bubble.y)
     }
 
-    private fun magnetToCancel(finalXBubble: Float, finalYBubble: Float) {
+    private fun magnetToCancel(finalXBubble: Float, finalYBubble: Float) : Boolean {
         if (cancelstatus == VisibilityStatus.VISIBLE) {
             val differenceX = abs(finalXBubble - cancel.x)
             val differenceY = abs(finalYBubble - cancel.y)
-            if (differenceX + differenceY < dip(72)) {
+            return if (differenceX + differenceY < dip(72)) {
                 val widthDifference = bubble.width - cancel.width
                 val heightDifference = bubble.height - cancel.height
                 yAnimBubble.animateToFinalPosition(cancel.y - (heightDifference / 2))
                 xAnimBubble.animateToFinalPosition(cancel.x - (widthDifference / 2))
                 zoomXAnimCancel.animateToFinalPosition(1.5f)
                 zoomYAnimCancel.animateToFinalPosition(1.5f)
+                true
             } else {
                 zoomXAnimCancel.animateToFinalPosition(1.0f)
                 zoomYAnimCancel.animateToFinalPosition(1.0f)
+                false
             }
         }
+        return false
     }
 
     fun setCancelImage(resourceId: Int): BubbleView {
@@ -516,8 +578,9 @@ class BubbleView : ConstraintLayout {
         return this
     }
 
-    fun setCardAnimationSpeed(speed: Float): BubbleView {
-        alphaAnimBubbleCardLayout.spring.stiffness = speed
+    fun setCustomChildLayoutAnimationSpeed(speed: Float): BubbleView {
+        alphaAnimBubbleCustomLayout.spring.stiffness = speed
+        slideYAnimBubbleCustomLayout.spring.stiffness = speed
         return this
     }
 
@@ -532,12 +595,12 @@ class BubbleView : ConstraintLayout {
     }
 
     fun setLayoutPopup(layoutId: Int): BubbleView {
-        return setLayoutPopup(View.inflate(context, layoutId, null))
+        LayoutInflater.from(context).inflate(layoutId, this)
+        return this
     }
 
-    fun setLayoutPopup(layoutView: View): BubbleView {
-        (cardView as FrameLayout).removeAllViews()
-        (cardView as FrameLayout).addView(layoutView)
+    fun setLayoutPopup(layoutView: View, params: LayoutParams): BubbleView {
+        addView(layoutView, params)
         shrinkCardLayoutIfNeed()
         return this
     }
