@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     app:child_layout="@+id/imageView"
     app:child_layout_anchor="top"
+    app:bubble_icon="@drawable/bubble_background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
         android:id="@+id/imageView"

@@ -313,10 +313,16 @@ class BubbleView : ConstraintLayout {
 
     private fun initAttributesLayout() {
         arrayAttr?.let { array ->
-            bubbleIconId = array.getResourceId(R.styleable.BubbleView_bubble_icon, R.drawable.bubble_background)
-            bubbleFallbackIconId = array.getResourceId(R.styleable.BubbleView_bubble_fallback_icon, R.drawable.bubble_background)
-            cancelIconId = array.getResourceId(R.styleable.BubbleView_cancel_icon, R.drawable.cancel_icon_bubble)
-            Glide.with(context).load(cancelIconId).into(cancel)
+            if (array.hasValue(R.styleable.BubbleView_bubble_icon)) {
+                bubbleIconId = array.getResourceId(R.styleable.BubbleView_bubble_icon, R.drawable.bubble_background)
+            }
+            if (array.hasValue(R.styleable.BubbleView_bubble_icon)) {
+                bubbleFallbackIconId = array.getResourceId(R.styleable.BubbleView_bubble_fallback_icon, R.drawable.bubble_background)
+            }
+            if (array.hasValue(R.styleable.BubbleView_bubble_icon)) {
+                cancelIconId = array.getResourceId(R.styleable.BubbleView_cancel_icon, R.drawable.cancel_icon_bubble)
+                Glide.with(context).load(cancelIconId).into(cancel)
+            }
             stickToWall = array.getBoolean(R.styleable.BubbleView_cancel_icon, true)
             show = array.getBoolean(R.styleable.BubbleView_show, false)
             if (array.hasValue(R.styleable.BubbleView_child_layout)) {
@@ -430,7 +436,8 @@ class BubbleView : ConstraintLayout {
     private fun loadBubble(requestListener: RequestListener<Drawable>) {
         bubbleIconId?.let {
             Glide.with(context).load(it).apply(RequestOptions().error(bubbleFallbackIconId
-                    ?: R.drawable.bubble_background)).addListener(requestListener).into(bubble)
+                    ?: R.drawable.bubble_background))
+                    .apply(RequestOptions.circleCropTransform()).addListener(requestListener).into(bubble)
         } ?: showBubbleAnimation()
     }
 
@@ -466,6 +473,7 @@ class BubbleView : ConstraintLayout {
     private fun showCardView() {
         cardstatus = VisibilityStatus.VISIBLE
         arrow.x = bubbleXOnClick
+        customLayout.visibility = View.VISIBLE
         alphaAnimBubbleCustomLayout.animateToFinalPosition(1f)
         alphaAnimBubbleArrow.animateToFinalPosition(1f)
         slideYAnimBubbleCustomLayout.animateToFinalPosition(bubbleYOnClick.plus(bubble.height).plus(arrow.height))
@@ -476,6 +484,9 @@ class BubbleView : ConstraintLayout {
     private fun hideCardView() {
         cardstatus = VisibilityStatus.INVISIBLE
         alphaAnimBubbleCustomLayout.animateToFinalPosition(0f)
+        alphaAnimBubbleCustomLayout.addEndListener { animation, canceled, value, velocity ->
+            customLayout.visibility = View.INVISIBLE
+        }
         alphaAnimBubbleArrow.animateToFinalPosition(0f)
         slideYAnimBubbleCustomLayout.animateToFinalPosition(height.toFloat())
         slideYAnimBubbleArrow.animateToFinalPosition(height.toFloat())
@@ -557,12 +568,17 @@ class BubbleView : ConstraintLayout {
     }
 
     fun setBubbleImage(drawable: Drawable): BubbleView {
-        Glide.with(context).load(drawable).into(bubble)
+        Glide.with(context).load(drawable).apply(RequestOptions.circleCropTransform()).into(bubble)
         return this
     }
 
     fun setBubbleImage(url: String): BubbleView {
-        Glide.with(context).load(url).into(bubble)
+        Glide.with(context).load(url).apply(RequestOptions.circleCropTransform()).into(bubble)
+        return this
+    }
+
+    fun setFallbackBubbleImage(resourceId: Int): BubbleView {
+        bubbleFallbackIconId = resourceId
         return this
     }
 
@@ -591,17 +607,6 @@ class BubbleView : ConstraintLayout {
 
     fun setAttachedViewRoot(boolean: Boolean): BubbleView {
         attachedToRoot = boolean
-        return this
-    }
-
-    fun setLayoutPopup(layoutId: Int): BubbleView {
-        LayoutInflater.from(context).inflate(layoutId, this)
-        return this
-    }
-
-    fun setLayoutPopup(layoutView: View, params: LayoutParams): BubbleView {
-        addView(layoutView, params)
-        shrinkCardLayoutIfNeed()
         return this
     }
 
