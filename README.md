@@ -1,5 +1,5 @@
 # NEWS
-Due to lack of time, the development will be discontinuous until new update.
+Due to lack of time, the development will be blocked until new update.
 
 # SimpleBubbleView
 Floating Bubble View for Android app, without OverlayPermissions.
